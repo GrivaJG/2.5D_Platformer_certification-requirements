@@ -54,9 +54,10 @@ public class Player : MonoBehaviour
         {
             if (_animator.GetBool("isGrabLedge") == false)
             {
+                var ModelRotation = this.transform.Find("Model");
                 Vector3 facing = transform.localEulerAngles;
                 facing.y = _direction.z > 0 ? 0 : 180;
-                transform.localEulerAngles = facing;
+                ModelRotation.localEulerAngles = facing;
             }
           
         }
@@ -86,7 +87,8 @@ public class Player : MonoBehaviour
         }
         else if (Input.GetButtonDown("Jump") && _isGround == false && _animator.GetBool("isGrabLedge") == true)
         {
-
+            _animator.SetTrigger("isClimbingUp");
+            
         }
 
 
@@ -99,6 +101,16 @@ public class Player : MonoBehaviour
         _controller.enabled = false;
         _animator.SetBool("isGrabLedge", true);
         transform.position = handPose;
+        _animator.SetFloat("isRunning", 0);
+        _animator.SetBool("isJumping", false);
+    }
+
+    public void OnClimbingUp()
+    {
+        transform.position = new Vector3(-4.84f, 74.48f, 123.82f);
+        _controller.enabled = true;
+        _animator.SetBool("isGrabLedge", false);
+       
     }
 
 }
