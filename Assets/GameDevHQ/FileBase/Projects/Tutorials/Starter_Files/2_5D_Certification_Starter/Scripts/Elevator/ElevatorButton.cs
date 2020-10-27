@@ -67,4 +67,10 @@ public class ElevatorButton : MonoBehaviour
     {
         _elevatorOn = true;
     }
+
+    private void OnDestroy()
+    {
+        ElevatorMove.OnElevatorStop -= OffElevator;
+        ElevatorButton.OnElevatorMoving -= OnElevator;
+    }
 }

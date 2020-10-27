@@ -134,4 +134,10 @@ public class ElevatorMove : MonoBehaviour
     }
 
 
+    private void OnDestroy()
+    {
+        ElevatorButton.OnElevatorMoving -= OnElevator;
+    }
+
+
 }
