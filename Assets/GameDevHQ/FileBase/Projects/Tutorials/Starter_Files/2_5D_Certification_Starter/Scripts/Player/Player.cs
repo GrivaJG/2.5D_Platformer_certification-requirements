@@ -107,7 +107,11 @@ public class Player : MonoBehaviour
 
     public void OnClimbingUp()
     {
-        transform.position = new Vector3(-4.84f, 74.48f, 123.82f);
+        var ModelRotation = this.transform.Find("Model");
+        if (ModelRotation.transform.localEulerAngles.y == 0)
+            transform.position = new Vector3(-4.84f, this.transform.position.y + 7.48f, this.transform.position.z + 1.4f);
+        else if (ModelRotation.transform.localEulerAngles.y == 180)
+            transform.position = new Vector3(-4.84f, this.transform.position.y + 7.48f, this.transform.position.z - 1.4f);
         _controller.enabled = true;
         _animator.SetBool("isGrabLedge", false);
        

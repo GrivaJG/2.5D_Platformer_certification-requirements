@@ -16,6 +16,7 @@ public class LedgerChecker : MonoBehaviour
         {
             Debug.Log("in Ledge_Checker");
             var player = other.transform.parent.GetComponent<Player>();
+            _handPose = other.transform.parent.GetComponent<Transform>().position;
 
             if (player != null)
                 player.GrabLedge(_handPose);
