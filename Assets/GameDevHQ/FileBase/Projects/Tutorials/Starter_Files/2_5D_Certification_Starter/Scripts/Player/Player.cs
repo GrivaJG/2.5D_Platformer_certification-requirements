@@ -91,8 +91,32 @@ public class Player : MonoBehaviour
             
         }
 
+       if (LadderMoving._nearLadderSystem == true)
+        {
+            if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S))
+            {
+                _direction = new Vector3(0, Input.GetAxisRaw("Vertical"), 0);
+                _animator.SetBool("isLadderClimbing", true);
+                var ModelRotation = this.transform.Find("Model");
+                ModelRotation.transform.localEulerAngles = new Vector3 (0, -90, 0);
+            }
+            _controller.Move(_direction * 2 * Time.deltaTime);
+            
+            _animator.SetFloat("isRunningUp", Input.GetAxisRaw("Vertical"));
+            
+        }
 
-        _velocity.y += _gravity * Time.deltaTime;
+        if (LadderMoving._nearLadderSystem != true)
+        {
+            _velocity.y += _gravity * Time.deltaTime;
+            _animator.SetFloat("isRunningUp", 0);
+            _animator.SetBool("isLadderClimbing", false);
+            
+        }
+            
+        
+        
+        
         _controller.Move(_velocity * Time.deltaTime);
     }
 
