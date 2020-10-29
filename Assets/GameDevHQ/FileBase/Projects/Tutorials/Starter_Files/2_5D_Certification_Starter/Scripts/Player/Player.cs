@@ -68,28 +68,28 @@ public class Player : MonoBehaviour
             _animator.SetBool("isJumping", false);
 
 
-            Debug.Log(_animator.GetBool("isJumping"));
+            
         }
 
-        if (Input.GetButtonDown("Jump") && _isGround && _animator.GetBool("isGrabLedge") == false)
+        if (Input.GetButtonDown("Jump") && _isGround && _animator.GetBool("isGrabLedge") == false && _animator.GetBool("isRoll") == false)
         {
             _velocity.y += _jump;
             _animator.SetBool("isJumping", true);
-            Debug.Log(_animator.GetBool("isJumping"));
+           
         }
-        else if (Input.GetButtonDown("Jump") && _isGround == false && _doubleJump && _animator.GetBool("isGrabLedge") == false)
+        else if (Input.GetButtonDown("Jump") && _isGround == false && _doubleJump && _animator.GetBool("isGrabLedge") == false && _animator.GetBool("isRoll") == false)
         {
             
-            Debug.Log("double jump");
+            
             _velocity.y += Mathf.Sqrt(_jump * -0.2f * _gravity);
             _doubleJump = false;
             _animator.SetBool("isJumping", true);
-            Debug.Log(_animator.GetBool("isJumping"));
+            
             _animator.SetBool("isLadderClimbing", false);
             _animator.SetFloat("isRunningUp", 0f);
 
         }
-        else if (Input.GetButtonDown("Jump") && _isGround == false && _animator.GetBool("isGrabLedge") == true)
+        else if (Input.GetButtonDown("Jump") && _isGround == false && _animator.GetBool("isGrabLedge") == true && _animator.GetBool("isRoll") == false)
         {
             _animator.SetTrigger("isClimbingUp");
             
@@ -129,7 +129,7 @@ public class Player : MonoBehaviour
             if (_animator.GetBool("isLadderClimbing") == true)
             {
                 _velocity.y = 0;
-                Debug.Log("isLadderClimbing = true");
+               
                 _velocity.y -= _gravity * Time.deltaTime;
             }
                 
@@ -139,9 +139,19 @@ public class Player : MonoBehaviour
             _animator.SetBool("isLadderClimbing", false);
             _animator.SetFloat("isRunningUp", 0f);
         }
+
+
+        if (Input.GetKeyDown(KeyCode.LeftShift) && _isGround)
+        {
+            if (_animator.GetFloat("isRunning") != 0)
+            {
+                _animator.SetBool("isRoll", true);
+                StartCoroutine(myRoll());
+            }
+        }
        
         _velocity.y += _gravity * Time.deltaTime;
-        Debug.Log("velocity.y = " + _velocity.y);
+       
         _controller.Move(_velocity * Time.deltaTime);
     }
 
@@ -160,10 +170,16 @@ public class Player : MonoBehaviour
         if (ModelRotation.transform.localEulerAngles.y == 0)
             transform.position = new Vector3(-4.84f, this.transform.position.y + 7.48f, this.transform.position.z + 1.4f);
         else if (ModelRotation.transform.localEulerAngles.y == 180)
-            transform.position = new Vector3(-4.84f, this.transform.position.y + 7.48f, this.transform.position.z - 1.4f);
+            transform.position = new Vector3(-4.84f, this.transform.position.y + 7.48f, this.transform.position.z - 1.6f);
         _controller.enabled = true;
         _animator.SetBool("isGrabLedge", false);
        
+    }
+
+    private IEnumerator myRoll()
+    {
+        yield return new WaitForSeconds(1.1f);
+        _animator.SetBool("isRoll", false);
     }
 
 }
