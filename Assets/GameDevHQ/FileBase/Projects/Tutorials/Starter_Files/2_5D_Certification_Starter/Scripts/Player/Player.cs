@@ -50,7 +50,7 @@ public class Player : MonoBehaviour
         _controller.Move(_direction * _speed * Time.deltaTime);
         _animator.SetFloat("isRunning", Mathf.Abs(Input.GetAxisRaw("Horizontal")));
 
-        if (Input.GetAxisRaw("Horizontal") != 0)
+        if (Input.GetAxisRaw("Horizontal") != 0 && _animator.GetBool("isLadderClimbing") == false)
         {
             if (_animator.GetBool("isGrabLedge") == false)
             {
@@ -79,11 +79,15 @@ public class Player : MonoBehaviour
         }
         else if (Input.GetButtonDown("Jump") && _isGround == false && _doubleJump && _animator.GetBool("isGrabLedge") == false)
         {
+            
             Debug.Log("double jump");
             _velocity.y += Mathf.Sqrt(_jump * -0.2f * _gravity);
             _doubleJump = false;
             _animator.SetBool("isJumping", true);
             Debug.Log(_animator.GetBool("isJumping"));
+            _animator.SetBool("isLadderClimbing", false);
+            _animator.SetFloat("isRunningUp", 0f);
+
         }
         else if (Input.GetButtonDown("Jump") && _isGround == false && _animator.GetBool("isGrabLedge") == true)
         {
@@ -91,32 +95,53 @@ public class Player : MonoBehaviour
             
         }
 
-       if (LadderMoving._nearLadderSystem == true)
+       
+        if (LadderMoving._nearLadderSystem)
         {
-            if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S))
-            {
-                _direction = new Vector3(0, Input.GetAxisRaw("Vertical"), 0);
-                _animator.SetBool("isLadderClimbing", true);
-                var ModelRotation = this.transform.Find("Model");
-                ModelRotation.transform.localEulerAngles = new Vector3 (0, -90, 0);
-            }
-            _controller.Move(_direction * 2 * Time.deltaTime);
-            
             _animator.SetFloat("isRunningUp", Input.GetAxisRaw("Vertical"));
-            
-        }
+            var ModelRotation = this.transform.Find("Model");
 
-        if (LadderMoving._nearLadderSystem != true)
-        {
-            _velocity.y += _gravity * Time.deltaTime;
-            _animator.SetFloat("isRunningUp", 0);
-            _animator.SetBool("isLadderClimbing", false);
+            if (Input.GetAxisRaw("Vertical") == 1)
+            {   
+                _animator.SetBool("isLadderClimbing", true);
+                ModelRotation.transform.localEulerAngles = new Vector3(0, -90, 0);
+                _direction = new Vector3(0, Input.GetAxisRaw("Vertical"), 0);
+                _controller.Move(_direction * 2 * Time.deltaTime);
+                _animator.SetBool("isJumping", false);
+
+
+            }
+            else if (Input.GetAxisRaw("Vertical") == -1 && _isGround == false)
+            {
+                _animator.SetBool("isLadderClimbing", true);
+                ModelRotation.transform.localEulerAngles = new Vector3(0, -90, 0);
+                _direction = new Vector3(0, Input.GetAxisRaw("Vertical"), 0);
+                _controller.Move(_direction * 2 * Time.deltaTime);
+                _animator.SetBool("isJumping", false);
+            }
+            else if (Input.GetAxisRaw("Vertical") == -1 && _isGround == true)
+            {
+                _animator.SetBool("isLadderClimbing", false);
+            }
+
             
+
+            if (_animator.GetBool("isLadderClimbing") == true)
+            {
+                _velocity.y = 0;
+                Debug.Log("isLadderClimbing = true");
+                _velocity.y -= _gravity * Time.deltaTime;
+            }
+                
         }
-            
-        
-        
-        
+        else
+        {
+            _animator.SetBool("isLadderClimbing", false);
+            _animator.SetFloat("isRunningUp", 0f);
+        }
+       
+        _velocity.y += _gravity * Time.deltaTime;
+        Debug.Log("velocity.y = " + _velocity.y);
         _controller.Move(_velocity * Time.deltaTime);
     }
 
